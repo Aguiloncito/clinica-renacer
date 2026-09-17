@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="main.java.org.renacer.clinica.renacer.controller.DashboardMedicoController"
+            prefWidth="1150" prefHeight="700">
+
+    <top>
+        <VBox spacing="6">
+            <padding><Insets top="10" right="12" bottom="6" left="12"/></padding>
+            <Label text="Dashboard médico - Agenda y citas" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Médico:"/>
+                <ComboBox fx:id="cboMedico" prefWidth="280"/>
+                <Label text="Fecha:"/>
+                <DatePicker fx:id="dpFecha" prefWidth="160"/>
+                <Button text="Hoy" onAction="#onHoy"/>
+                <Button text="Refrescar" onAction="#onRefrescar"/>
+                <Label fx:id="lblResumen" text="" style="-fx-text-fill: #555;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="8">
+            <padding><Insets top="0" right="6" bottom="10" left="12"/></padding>
+
+            <Label text="Agenda del día seleccionado" style="-fx-font-weight: bold;"/>
+            <TableView fx:id="tblAgenda" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colHora" text="Hora" prefWidth="80"/>
+                    <TableColumn fx:id="colPaciente" text="Paciente" prefWidth="190"/>
+                    <TableColumn fx:id="colMedico" text="Médico" prefWidth="190"/>
+                    <TableColumn fx:id="colEspecialidad" text="Especialidad" prefWidth="160"/>
+                    <TableColumn fx:id="colEstado" text="Estado" prefWidth="110"/>
+                </columns>
+            </TableView>
+
+            <Label fx:id="lblCitaSeleccionada" text="Ninguna cita seleccionada"
+                   style="-fx-font-weight: bold; -fx-text-fill: #1a4b8c;"/>
+
+            <HBox spacing="8">
+                <Button fx:id="btnIniciar"   text="Iniciar consulta"    onAction="#onIniciarConsulta"   disable="true"/>
+                <Button fx:id="btnFinalizar" text="Finalizar y guardar" onAction="#onFinalizarConsulta" disable="true"/>
+                <Button fx:id="btnReceta"    text="Agregar receta"      onAction="#onAgregarReceta"     disable="true"/>
+                <Button fx:id="btnCancelar"  text="Cancelar cita"       onAction="#onCancelarCita"      disable="true"/>
+            </HBox>
+
+            <Separator/>
+
+            <Label text="Agendar nueva cita (usa el médico y la fecha de arriba)" style="-fx-font-weight: bold;"/>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Paciente:"/>
+                <ComboBox fx:id="cboPacienteNuevo" prefWidth="220"/>
+                <Label text="Hora libre:"/>
+                <ComboBox fx:id="cboHoraLibre" prefWidth="120"/>
+                <Button text="Agendar" onAction="#onAgendarCita"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="8" prefWidth="360">
+            <padding><Insets top="0" right="12" bottom="10" left="6"/></padding>
+
+            <Label text="Citas pendientes" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="lstPendientes" prefHeight="200"/>
+
+            <Separator/>
+
+            <Label text="Consulta y receta" style="-fx-font-weight: bold;"/>
+
+            <Label text="Motivo:"/>
+            <TextField fx:id="txtMotivo" promptText="Motivo de la consulta"/>
+
+            <Label text="Diagnóstico:"/>
+            <TextArea fx:id="txtDiagnostico" prefRowCount="2" promptText="Diagnóstico (obligatorio)"/>
+
+            <Label text="Observaciones:"/>
+            <TextArea fx:id="txtObservaciones" prefRowCount="2" promptText="Observaciones"/>
+
+            <Label text="Medicamentos:"/>
+            <TextArea fx:id="txtMedicamentos" prefRowCount="2" promptText="Ej. Ibuprofeno 400mg"/>
+
+            <Label text="Indicaciones:"/>
+            <TextArea fx:id="txtIndicaciones" prefRowCount="2" promptText="Ej. Cada 8 horas por 5 dias"/>
+        </VBox>
+    </right>
+</BorderPane>
