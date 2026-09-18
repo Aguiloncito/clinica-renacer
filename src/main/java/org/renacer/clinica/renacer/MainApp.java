@@ -1,12 +1,8 @@
 package main.java.org.renacer.clinica.renacer;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
+import main.java.org.renacer.clinica.renacer.util.sceneManager.SceneManager;
 
 /**
  *
@@ -15,13 +11,12 @@ import java.io.IOException;
 public class MainApp extends Application {
 
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/dashboard-medico.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Clínica Renacer - Panel Médico");
-        stage.show();
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Clinica Renacer");
+        SceneManager sceneManager = new SceneManager(primaryStage);
+        // Por el momento la app inicia mostrando el login;
+        // al iniciar sesion correctamente se muestra el mensaje de Bienvenido.
+        sceneManager.showLoginView();
     }
 
     /**
@@ -30,4 +25,9 @@ public class MainApp extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
+
+
+
+

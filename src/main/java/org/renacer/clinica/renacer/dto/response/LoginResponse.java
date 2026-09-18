@@ -19,6 +19,12 @@ public class LoginResponse {
         this.apellidos = apellidos;
         this.password_hash = password_hash;
     }
+    
+    //sobrecarga
+    public LoginResponse(String nombres, String apellidos) {
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+    }
 
     public String getNombres() {
         return nombres;
