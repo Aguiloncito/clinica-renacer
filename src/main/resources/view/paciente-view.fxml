@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="main.java.org.renacer.clinica.renacer.controller.PacienteController"
+      style="-fx-padding: 20;">
+
+    <Label text="Gestión de Pacientes" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10.0" vgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="120"/>
+            <ColumnConstraints prefWidth="250"/>
+            <ColumnConstraints minWidth="120"/>
+            <ColumnConstraints prefWidth="250"/>
+        </columnConstraints>
+
+        <Label text="ID Paciente:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtIdPaciente" disable="true" promptText="Auto-generado" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Nombres:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtNombres" promptText="Nombres" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="Apellidos:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtApellidos" promptText="Apellidos" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Fecha Nacimiento:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <DatePicker fx:id="dpFechaNacimiento" promptText="Fecha de nacimiento" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+        <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtTelefono" promptText="Teléfono" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Dirección:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtDireccion" promptText="Dirección" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <HBox spacing="10.0">
+        <Button text="Guardar / Actualizar" onAction="#onGuardar" style="-fx-background-color: #2e7d32; -fx-text-fill: white;"/>
+        <Button text="Eliminar" onAction="#onEliminar" style="-fx-background-color: #c62828; -fx-text-fill: white;"/>
+        <Button text="Limpiar Formulario" onAction="#onLimpiar"/>
+    </HBox>
+
+    <Separator/>
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Buscar:"/>
+        <TextField fx:id="txtBuscar" promptText="Buscar por ID, nombre o apellido..." prefWidth="300"/>
+        <Button text="Buscar" onAction="#onBuscar"/>
+    </HBox>
+
+    <TableView fx:id="tblPacientes" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colIdPaciente" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colNombres" text="Nombres" prefWidth="150"/>
+            <TableColumn fx:id="colApellidos" text="Apellidos" prefWidth="150"/>
+            <TableColumn fx:id="colFechaNacimiento" text="Fecha Nac." prefWidth="110"/>
+            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="100"/>
+            <TableColumn fx:id="colDireccion" text="Dirección" prefWidth="200"/>
+        </columns>
+    </TableView>
+
+</VBox>

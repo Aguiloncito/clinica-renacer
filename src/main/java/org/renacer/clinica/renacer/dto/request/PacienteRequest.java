@@ -1,18 +1,18 @@
-package main.java.org.renacer.clinica.renacer.model;
+package main.java.org.renacer.clinica.renacer.dto.request;
 
 import java.time.LocalDate;
 
-public class Paciente {
-    private int idPaciente;
+public class PacienteRequest {
+    private Integer idPaciente;
     private String nombres;
     private String apellidos;
     private LocalDate fechaNacimiento;
     private String telefono;
     private String direccion;
 
-    public Paciente() {}
+    public PacienteRequest() {}
 
-    public Paciente(int idPaciente, String nombres, String apellidos, LocalDate fechaNacimiento, String telefono, String direccion) {
+    public PacienteRequest(Integer idPaciente, String nombres, String apellidos, LocalDate fechaNacimiento, String telefono, String direccion) {
         this.idPaciente = idPaciente;
         this.nombres = nombres;
         this.apellidos = apellidos;
@@ -21,16 +21,8 @@ public class Paciente {
         this.direccion = direccion;
     }
 
-    public Paciente(String nombres, String apellidos, LocalDate fechaNacimiento, String telefono, String direccion) {
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
-        this.telefono = telefono;
-        this.direccion = direccion;
-    }
-
-    public int getIdPaciente() { return idPaciente; }
-    public void setIdPaciente(int idPaciente) { this.idPaciente = idPaciente; }
+    public Integer getIdPaciente() { return idPaciente; }
+    public void setIdPaciente(Integer idPaciente) { this.idPaciente = idPaciente; }
 
     public String getNombres() { return nombres; }
     public void setNombres(String nombres) { this.nombres = nombres; }
