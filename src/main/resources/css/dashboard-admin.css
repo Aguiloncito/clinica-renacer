@@ -39,6 +39,17 @@
     -fx-padding: 12px;
 }
 
+/* ---- ScrollPane que envuelve el contenido de cada pestaña --------------- */
+.app-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.app-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
 /* ---- Datos del paciente en el expediente -------------------------------- */
 .expediente-nombre {
     -fx-text-fill: -fx-primary-petroleo;

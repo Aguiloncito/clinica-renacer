@@ -6,6 +6,7 @@ package main.java.org.renacer.clinica.renacer.service;
 
 import main.java.org.renacer.clinica.renacer.model.Medico;
 import main.java.org.renacer.clinica.renacer.repository.MedicoRepository;
+import org.mindrot.jbcrypt.BCrypt;
  
 import java.sql.SQLException;
 import java.util.List;
@@ -25,16 +26,38 @@ public class MedicoService {
         return repo.buscar(filtro);
     }
  
+    /** Crea un médico nuevo junto con su usuario de acceso (rol "medico"). */
+    public void crear(Medico m, String usuario, String passwordPlano) throws SQLException {
+        validar(m);
+        if (repo.existeColegiado(m.getNumeroColegiado(), m.getIdMedico())) {
+            throw new IllegalArgumentException("Ya existe un médico con el colegiado " + m.getNumeroColegiado() + ".");
+        }
+        if (vacio(usuario)) {
+            throw new IllegalArgumentException("El usuario de acceso es obligatorio.");
+        }
+        if (vacio(passwordPlano)) {
+            throw new IllegalArgumentException("Debe asignar una contraseña para el médico.");
+        }
+        if (passwordPlano.trim().length() < 6) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres.");
+        }
+        if (repo.existeUsuario(usuario.trim())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el nombre \"" + usuario.trim() + "\".");
+        }
+        String passwordHasheada = BCrypt.hashpw(passwordPlano, BCrypt.gensalt(10));
+        repo.insertarConUsuario(m, usuario.trim(), passwordHasheada);
+    }
+ 
+    /** Actualiza los datos de un médico existente (no toca sus credenciales). */
     public void guardar(Medico m) throws SQLException {
         validar(m);
         if (repo.existeColegiado(m.getNumeroColegiado(), m.getIdMedico())) {
             throw new IllegalArgumentException("Ya existe un médico con el colegiado " + m.getNumeroColegiado() + ".");
         }
         if (MedicoRepository.parseId(m.getIdMedico()) == 0) {
-            repo.insertar(m);
-        } else {
-            repo.actualizar(m);
+            throw new IllegalArgumentException("Use la opción de creación para registrar un médico nuevo.");
         }
+        repo.actualizar(m);
     }
  
     public void eliminar(Medico m) throws SQLException {

@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -41,6 +43,7 @@
 
             <!-- ===== 1. MÉDICOS ===== -->
             <Tab fx:id="tabMedicos" text="Médicos">
+                <ScrollPane fitToWidth="true" styleClass="app-scroll">
                 <VBox spacing="8" styleClass="admin-panel">
 
                     <HBox alignment="CENTER_LEFT" spacing="8">
@@ -74,6 +77,16 @@
                             <TextField fx:id="txtMedicoEspecialidad" />
                             <Label text="Número de colegiado" />
                             <TextField fx:id="txtMedicoColegiado" />
+
+                            <VBox fx:id="boxCredencialesMedico" spacing="6">
+                                <Separator />
+                                <Label styleClass="section-title" text="Acceso al sistema" />
+                                <Label text="Usuario (login)" />
+                                <TextField fx:id="txtMedicoUsuario" promptText="ej. ana.gomez" />
+                                <Label text="Asignar contraseña" />
+                                <PasswordField fx:id="txtMedicoPassword" promptText="Contraseña para el médico" />
+                            </VBox>
+
                             <HBox spacing="8">
                                 <padding><Insets top="6" /></padding>
                                 <Button onAction="#handleGuardarMedico" styleClass="btn-success" text="Guardar" />
@@ -108,10 +121,12 @@
                         </VBox>
                     </HBox>
                 </VBox>
+                </ScrollPane>
             </Tab>
 
             <!-- ===== 2. EXPEDIENTES ===== -->
             <Tab fx:id="tabExpedientes" text="Expedientes de pacientes">
+                <ScrollPane fitToWidth="true" styleClass="app-scroll">
                 <HBox spacing="12" styleClass="admin-panel">
 
                     <VBox minWidth="360" prefWidth="360" spacing="8">
@@ -153,10 +168,12 @@
                         <TextArea fx:id="txtDetalleHistorial" editable="false" prefRowCount="7" styleClass="detalle-area" wrapText="true" />
                     </VBox>
                 </HBox>
+                </ScrollPane>
             </Tab>
 
             <!-- ===== 3. REGISTRO DE CONSULTAS ===== -->
             <Tab fx:id="tabConsultas" text="Registro de consultas">
+                <ScrollPane fitToWidth="true" styleClass="app-scroll">
                 <VBox spacing="8" styleClass="admin-panel">
 
                     <HBox alignment="CENTER_LEFT" spacing="8">
@@ -194,6 +211,7 @@
                         </VBox>
                     </HBox>
                 </VBox>
+                </ScrollPane>
             </Tab>
 
         </TabPane>

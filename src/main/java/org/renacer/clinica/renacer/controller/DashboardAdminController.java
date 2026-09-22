@@ -14,12 +14,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import main.java.org.renacer.clinica.renacer.dto.response.ExpedienteResponse;
 import main.java.org.renacer.clinica.renacer.dto.response.PacienteResponse;
 import main.java.org.renacer.clinica.renacer.model.Medico;
@@ -66,6 +68,9 @@ public class DashboardAdminController implements Initializable {
     @FXML private TextField txtMedicoApellidos;
     @FXML private TextField txtMedicoEspecialidad;
     @FXML private TextField txtMedicoColegiado;
+    @FXML private VBox boxCredencialesMedico;
+    @FXML private TextField txtMedicoUsuario;
+    @FXML private PasswordField txtMedicoPassword;
     @FXML private Button btnEliminarMedico;
 
     @FXML private TableView<ExpedienteResponse> tblRecetasMedico;
@@ -266,11 +271,16 @@ public class DashboardAdminController implements Initializable {
                 txtMedicoColegiado.getText().trim());
         boolean eraNuevo = txtMedicoId.getText() == null || txtMedicoId.getText().isBlank();
         try {
-            medicoService.guardar(m);
+            if (eraNuevo) {
+                medicoService.crear(m, txtMedicoUsuario.getText(), txtMedicoPassword.getText());
+            } else {
+                medicoService.guardar(m);
+            }
             cargarMedicos(txtBuscarMedico.getText());
             seleccionarMedico(m.getIdMedico());
             refrescarDatosClinicos();
-            Alertas.info(eraNuevo ? "Médico registrado correctamente." : "Datos del médico actualizados.");
+            Alertas.info(eraNuevo ? "Médico registrado correctamente. Ya puede iniciar sesión con el usuario asignado."
+                                   : "Datos del médico actualizados.");
         } catch (Exception e) {
             mostrarError(e);
         }
@@ -361,6 +371,8 @@ public class DashboardAdminController implements Initializable {
         txtMedicoApellidos.setText(m.getApellidos());
         txtMedicoEspecialidad.setText(m.getEspecialidad());
         txtMedicoColegiado.setText(m.getNumeroColegiado());
+        // Editando un médico existente: no se piden ni se muestran credenciales aquí.
+        mostrarCredencialesMedico(false);
     }
 
     private void limpiarFormularioMedico() {
@@ -370,6 +382,15 @@ public class DashboardAdminController implements Initializable {
         txtMedicoApellidos.clear();
         txtMedicoEspecialidad.clear();
         txtMedicoColegiado.clear();
+        txtMedicoUsuario.clear();
+        txtMedicoPassword.clear();
+        // Médico nuevo: se piden usuario y contraseña para su acceso.
+        mostrarCredencialesMedico(true);
+    }
+
+    private void mostrarCredencialesMedico(boolean mostrar) {
+        boxCredencialesMedico.setVisible(mostrar);
+        boxCredencialesMedico.setManaged(mostrar);
     }
 
     private void limpiarRecetaSeleccionada() {
