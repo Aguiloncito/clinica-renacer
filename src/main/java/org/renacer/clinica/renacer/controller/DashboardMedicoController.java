@@ -699,3 +699,4 @@ public class DashboardMedicoController implements Initializable {
         txtIndicaciones.clear();
     }
 }
+

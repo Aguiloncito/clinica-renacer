@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import main.java.org.renacer.clinica.renacer.dto.request.LoginRequest;
 import main.java.org.renacer.clinica.renacer.dto.response.LoginResponse;
 import main.java.org.renacer.clinica.renacer.service.autorizacion.AuthService;
+import main.java.org.renacer.clinica.renacer.util.Roles;
 import main.java.org.renacer.clinica.renacer.util.sceneManager.SceneManager;
 
 /**
@@ -48,9 +49,20 @@ public class LoginController implements Initializable {
             try{
                 
             LoginResponse responseService = authService.login(new LoginRequest(txtFieldUsuario.getText(), txtFieldPass.getText()));
+            // NUEVO: si la contrasena es incorrecta, login() devuelve null
+            if (responseService == null) {
+                sceneManager.showInfoAlert("Datos incorrectos", "Revisa tu información", "Intenta de nuevo", Alert.AlertType.INFORMATION);
+                return;
+            }
+            // NUEVO: el administrador entra a su panel
+            if (Roles.esAdministrador(responseService.getRol())) {
+                String nombre = (responseService.getNombres() + " " + responseService.getApellidos()).trim();
+                sceneManager.showDashboardAdminView(nombre);
+                return;
+            }
             LoginResponse userLogged = new LoginResponse(responseService.getNombres(), responseService.getApellidos());
             sceneManager.showInfoAlert("Clinica Renacer", "Inicio exitoso", "Bienvenido: "+ userLogged.getNombres(), Alert.AlertType.INFORMATION);
-            // TODO: cuando exista el dashboard, navegar aqui con sceneManager.showDashBoardView();
+            // TODO: aqui iria la navegacion de pacientes y medicos.
             }catch(Exception e){
                 sceneManager.showInfoAlert("Datos incorrectos", "Revisa tu información", "Intenta de nuevo", Alert.AlertType.INFORMATION);
             }
