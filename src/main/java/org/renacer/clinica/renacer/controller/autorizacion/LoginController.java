@@ -49,20 +49,32 @@ public class LoginController implements Initializable {
             try{
                 
             LoginResponse responseService = authService.login(new LoginRequest(txtFieldUsuario.getText(), txtFieldPass.getText()));
-            // NUEVO: si la contrasena es incorrecta, login() devuelve null
+            //si la contrasena es incorrecta, login() devuelve null
             if (responseService == null) {
                 sceneManager.showInfoAlert("Datos incorrectos", "Revisa tu información", "Intenta de nuevo", Alert.AlertType.INFORMATION);
                 return;
             }
-            // NUEVO: el administrador entra a su panel
-            if (Roles.esAdministrador(responseService.getRol())) {
-                String nombre = (responseService.getNombres() + " " + responseService.getApellidos()).trim();
+            String rol = responseService.getRol();
+            String nombre = (responseService.getNombres() + " " + responseService.getApellidos()).trim();
+
+            //el administrador entra a su panel
+            if (Roles.esAdministrador(rol)) {
                 sceneManager.showDashboardAdminView(nombre);
                 return;
             }
-            LoginResponse userLogged = new LoginResponse(responseService.getNombres(), responseService.getApellidos());
-            sceneManager.showInfoAlert("Clinica Renacer", "Inicio exitoso", "Bienvenido: "+ userLogged.getNombres(), Alert.AlertType.INFORMATION);
-            // TODO: aqui iria la navegacion de pacientes y medicos.
+            //el medico entra a su panel de agenda/consultas
+            if (Roles.esMedico(rol)) {
+                sceneManager.showDashboardMedicoView();
+                return;
+            }
+            //el paciente entra a su vista
+            if (Roles.esPaciente(rol)) {
+                sceneManager.showPacienteView();
+                return;
+            }
+
+            // Rol no reconocido, se informa en lugar de dejar la sesion "colgada"
+            sceneManager.showInfoAlert("Rol no reconocido", "No se pudo redirigir", "El usuario no tiene un rol valido asignado.", Alert.AlertType.WARNING);
             }catch(Exception e){
                 sceneManager.showInfoAlert("Datos incorrectos", "Revisa tu información", "Intenta de nuevo", Alert.AlertType.INFORMATION);
             }

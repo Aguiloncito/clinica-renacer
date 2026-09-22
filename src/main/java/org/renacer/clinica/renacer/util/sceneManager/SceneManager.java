@@ -10,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import main.java.org.renacer.clinica.renacer.controller.DashboardAdminController;
+import main.java.org.renacer.clinica.renacer.controller.DashboardMedicoController;
+import main.java.org.renacer.clinica.renacer.controller.PacienteController;
 import main.java.org.renacer.clinica.renacer.controller.autorizacion.LoginController;
 import main.java.org.renacer.clinica.renacer.controller.autorizacion.RegistroController;
 import main.java.org.renacer.clinica.renacer.repository.ExpedienteRepository;
@@ -86,9 +88,47 @@ public class SceneManager {
         primaryStage.centerOnScreen();
         primaryStage.show();
     }
-    // NOTA: el dashboard todavia no esta implementado en este proyecto.
-    // Cuando se construya la vista dashboard-view.fxml y su controlador,
-    // agregar aqui un metodo showDashBoardView() equivalente a los de arriba.
+    // NUEVO: panel del medico (se llama desde LoginController cuando el rol es "medico")
+    public void showDashboardMedicoView() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH + "dashboard-medico.fxml"));
+
+        loader.setControllerFactory(
+                clazz -> {
+                    try {
+                        return clazz.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error al crear el constructor" + e.getMessage());
+                    }
+                });
+
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 1150, 700);
+        primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
+        primaryStage.centerOnScreen();
+        primaryStage.show();
+    }
+
+    // NUEVO: vista del paciente (se llama desde LoginController cuando el rol es "paciente")
+    public void showPacienteView() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH + "paciente-view.fxml"));
+
+        loader.setControllerFactory(
+                clazz -> {
+                    try {
+                        return clazz.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Error al crear el constructor" + e.getMessage());
+                    }
+                });
+
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 700, 600);
+        primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
+        primaryStage.centerOnScreen();
+        primaryStage.show();
+    }
 
     //venta modal, para mostrar alerta
     

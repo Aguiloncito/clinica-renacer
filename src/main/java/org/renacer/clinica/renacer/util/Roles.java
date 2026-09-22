@@ -15,4 +15,12 @@ public final class Roles {
     public static boolean esAdministrador(String rol) {
         return ADMINISTRADOR.equalsIgnoreCase(rol == null ? "" : rol.trim());
     }
+
+    public static boolean esMedico(String rol) {
+        return MEDICO.equalsIgnoreCase(rol == null ? "" : rol.trim());
+    }
+
+    public static boolean esPaciente(String rol) {
+        return PACIENTE.equalsIgnoreCase(rol == null ? "" : rol.trim());
+    }
 }
