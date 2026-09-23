@@ -1,4 +1,3 @@
-
 package main.java.org.renacer.clinica.renacer.controller;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -323,7 +322,6 @@ public class DashboardMedicoController implements Initializable {
     private void cargarPacientes() {
         try {
 
-            // CORREGIDO:
             // PacienteRepository tiene obtenerTodos(), no listar()
             cboPacienteNuevo.setItems(
                     FXCollections.observableArrayList(
@@ -663,7 +661,6 @@ public class DashboardMedicoController implements Initializable {
             Paciente p = cboPacienteNuevo.getValue();
 
             citaService.agendar(
-                    // CORREGIDO:
                     // Se convierte Integer a String
                     p == null
                             ? null
@@ -690,6 +687,33 @@ public class DashboardMedicoController implements Initializable {
         }
     }
 
+    @FXML
+    private void onCerrarSesion() {
+
+        if (!Alertas.confirmar("¿Desea cerrar sesión?")) {
+            return;
+        }
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/view/login-view.fxml"));
+
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage =
+                    (javafx.stage.Stage) tblAgenda.getScene().getWindow();
+
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Renacer - Iniciar sesión");
+            stage.centerOnScreen();
+
+        } catch (Exception ex) {
+            Alertas.error(
+                    "No se pudo cerrar la sesión: "
+                    + ex.getMessage());
+        }
+    }
+
     private void limpiarFormularioConsulta() {
 
         txtMotivo.clear();
@@ -699,4 +723,3 @@ public class DashboardMedicoController implements Initializable {
         txtIndicaciones.clear();
     }
 }
-
