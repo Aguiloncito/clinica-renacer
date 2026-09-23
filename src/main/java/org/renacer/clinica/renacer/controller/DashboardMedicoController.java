@@ -321,21 +321,13 @@ public class DashboardMedicoController implements Initializable {
     }
 
     private void cargarPacientes() {
-        try {
-
-            // CORREGIDO:
-            // PacienteRepository tiene obtenerTodos(), no listar()
-            cboPacienteNuevo.setItems(
-                    FXCollections.observableArrayList(
-                            pacienteRepository.obtenerTodos()));
-
-        } catch (SQLException ex) {
-            Alertas.error(
-                    "No se pudieron cargar los pacientes: "
-                    + ex.getMessage());
-        }
+    try {
+        cboPacienteNuevo.setItems(FXCollections.observableArrayList(pacienteRepository.obtenerTodos()));
+    } catch (Exception ex) {
+        Alertas.error("No se pudieron cargar los pacientes: " + ex.getMessage());
     }
-
+}
+ 
     private void refrescarTodo() {
         cargarConteoMes();
         cargarAgenda();
@@ -656,40 +648,28 @@ public class DashboardMedicoController implements Initializable {
     }
 
     @FXML
-    private void onAgendarCita() {
-
-        try {
-
-            Paciente p = cboPacienteNuevo.getValue();
-
-            citaService.agendar(
-                    // CORREGIDO:
-                    // Se convierte Integer a String
-                    p == null
-                            ? null
-                            : String.valueOf(p.getIdPaciente()),
-
-                    idMedicoFiltro(),
-                    dpFecha.getValue(),
-                    cboHoraLibre.getValue());
-
-            Alertas.info(
-                    "Cita agendada correctamente.");
-
-            refrescarTodo();
-
-        } catch (IllegalArgumentException ex) {
-
-            Alertas.advertencia(ex.getMessage());
-
-        } catch (SQLException ex) {
-
-            Alertas.error(
-                    "Error de base de datos: "
-                    + ex.getMessage());
+private void onAgendarCita() {
+    try {
+        Paciente p = cboPacienteNuevo.getValue();
+        if (p == null) {
+            throw new IllegalArgumentException("Debe seleccionar un paciente.");
         }
-    }
 
+        citaService.agendar(
+                String.valueOf(p.getIdPaciente()),
+                idMedicoFiltro(),
+                dpFecha.getValue(),
+                cboHoraLibre.getValue()
+        );
+
+        Alertas.info("Cita agendada correctamente.");
+        refrescarTodo();
+    } catch (IllegalArgumentException ex) {
+        Alertas.advertencia(ex.getMessage());
+    } catch (Exception ex) {
+        Alertas.error("Error de base de datos o sistema: " + ex.getMessage());
+    }
+}
     private void limpiarFormularioConsulta() {
 
         txtMotivo.clear();
