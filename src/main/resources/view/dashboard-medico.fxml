@@ -22,6 +22,8 @@
                 <Button text="Hoy" onAction="#onHoy"/>
                 <Button text="Refrescar" onAction="#onRefrescar"/>
                 <Label fx:id="lblResumen" text="" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Cerrar sesión" onAction="#onCerrarSesion" styleClass="btn-danger"/>
             </HBox>
         </VBox>
     </top>

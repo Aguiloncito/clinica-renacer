@@ -1,4 +1,3 @@
-
 package main.java.org.renacer.clinica.renacer.controller;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -321,10 +320,18 @@ public class DashboardMedicoController implements Initializable {
     }
 
     private void cargarPacientes() {
-    try {
-        cboPacienteNuevo.setItems(FXCollections.observableArrayList(pacienteRepository.obtenerTodos()));
-    } catch (Exception ex) {
-        Alertas.error("No se pudieron cargar los pacientes: " + ex.getMessage());
+        try {
+
+            // PacienteRepository tiene obtenerTodos(), no listar()
+            cboPacienteNuevo.setItems(
+                    FXCollections.observableArrayList(
+                            pacienteRepository.obtenerTodos()));
+
+        } catch (SQLException ex) {
+            Alertas.error(
+                    "No se pudieron cargar los pacientes: "
+                    + ex.getMessage());
+        }
     }
 }
  
@@ -648,12 +655,30 @@ public class DashboardMedicoController implements Initializable {
     }
 
     @FXML
-private void onAgendarCita() {
-    try {
-        Paciente p = cboPacienteNuevo.getValue();
-        if (p == null) {
-            throw new IllegalArgumentException("Debe seleccionar un paciente.");
-        }
+    private void onAgendarCita() {
+
+        try {
+
+            Paciente p = cboPacienteNuevo.getValue();
+
+            citaService.agendar(
+                    // Se convierte Integer a String
+                    p == null
+                            ? null
+                            : String.valueOf(p.getIdPaciente()),
+
+                    idMedicoFiltro(),
+                    dpFecha.getValue(),
+                    cboHoraLibre.getValue());
+
+            Alertas.info(
+                    "Cita agendada correctamente.");
+
+            refrescarTodo();
+
+        } catch (IllegalArgumentException ex) {
+
+            Alertas.advertencia(ex.getMessage());
 
         citaService.agendar(
                 String.valueOf(p.getIdPaciente()),
@@ -669,7 +694,34 @@ private void onAgendarCita() {
     } catch (Exception ex) {
         Alertas.error("Error de base de datos o sistema: " + ex.getMessage());
     }
-}
+
+    @FXML
+    private void onCerrarSesion() {
+
+        if (!Alertas.confirmar("¿Desea cerrar sesión?")) {
+            return;
+        }
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/view/login-view.fxml"));
+
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage =
+                    (javafx.stage.Stage) tblAgenda.getScene().getWindow();
+
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Renacer - Iniciar sesión");
+            stage.centerOnScreen();
+
+        } catch (Exception ex) {
+            Alertas.error(
+                    "No se pudo cerrar la sesión: "
+                    + ex.getMessage());
+        }
+    }
+
     private void limpiarFormularioConsulta() {
 
         txtMotivo.clear();
@@ -679,4 +731,3 @@ private void onAgendarCita() {
         txtIndicaciones.clear();
     }
 }
-
