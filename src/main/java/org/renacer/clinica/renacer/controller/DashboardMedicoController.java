@@ -1,3 +1,4 @@
+
 package main.java.org.renacer.clinica.renacer.controller;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +17,7 @@ import main.java.org.renacer.clinica.renacer.repository.PacienteRepository;
 import main.java.org.renacer.clinica.renacer.service.CitaService;
 import main.java.org.renacer.clinica.renacer.util.Alertas;
 import main.java.org.renacer.clinica.renacer.util.EstadoCita;
+import main.java.org.renacer.clinica.renacer.util.sceneManager.SceneManager;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -83,6 +85,17 @@ public class DashboardMedicoController implements Initializable {
     /** null = todos los médicos. */
     private static final Medico TODOS =
             new Medico("0", "Todos", "los médicos", "—", "—");
+
+    private final SceneManager sceneManager;
+
+    /** Constructor por defecto (mantiene compatibilidad si se instancia sin SceneManager). */
+    public DashboardMedicoController() {
+        this.sceneManager = null;
+    }
+
+    public DashboardMedicoController(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -320,18 +333,10 @@ public class DashboardMedicoController implements Initializable {
     }
 
     private void cargarPacientes() {
-        try {
-
-            // PacienteRepository tiene obtenerTodos(), no listar()
-            cboPacienteNuevo.setItems(
-                    FXCollections.observableArrayList(
-                            pacienteRepository.obtenerTodos()));
-
-        } catch (SQLException ex) {
-            Alertas.error(
-                    "No se pudieron cargar los pacientes: "
-                    + ex.getMessage());
-        }
+    try {
+        cboPacienteNuevo.setItems(FXCollections.observableArrayList(pacienteRepository.obtenerTodos()));
+    } catch (Exception ex) {
+        Alertas.error("No se pudieron cargar los pacientes: " + ex.getMessage());
     }
 }
  
@@ -503,6 +508,23 @@ public class DashboardMedicoController implements Initializable {
     }
 
     @FXML
+    private void onCerrarSesion() {
+
+        if (sceneManager == null) {
+            Alertas.error("No se pudo volver al inicio de sesión.");
+            return;
+        }
+
+        try {
+            sceneManager.showLoginView();
+        } catch (Exception ex) {
+            Alertas.error(
+                    "No se pudo volver al inicio de sesión: "
+                    + ex.getMessage());
+        }
+    }
+
+    @FXML
     private void onRefrescar() {
         refrescarTodo();
     }
@@ -655,30 +677,12 @@ public class DashboardMedicoController implements Initializable {
     }
 
     @FXML
-    private void onAgendarCita() {
-
-        try {
-
-            Paciente p = cboPacienteNuevo.getValue();
-
-            citaService.agendar(
-                    // Se convierte Integer a String
-                    p == null
-                            ? null
-                            : String.valueOf(p.getIdPaciente()),
-
-                    idMedicoFiltro(),
-                    dpFecha.getValue(),
-                    cboHoraLibre.getValue());
-
-            Alertas.info(
-                    "Cita agendada correctamente.");
-
-            refrescarTodo();
-
-        } catch (IllegalArgumentException ex) {
-
-            Alertas.advertencia(ex.getMessage());
+private void onAgendarCita() {
+    try {
+        Paciente p = cboPacienteNuevo.getValue();
+        if (p == null) {
+            throw new IllegalArgumentException("Debe seleccionar un paciente.");
+        }
 
         citaService.agendar(
                 String.valueOf(p.getIdPaciente()),
@@ -694,34 +698,7 @@ public class DashboardMedicoController implements Initializable {
     } catch (Exception ex) {
         Alertas.error("Error de base de datos o sistema: " + ex.getMessage());
     }
-
-    @FXML
-    private void onCerrarSesion() {
-
-        if (!Alertas.confirmar("¿Desea cerrar sesión?")) {
-            return;
-        }
-
-        try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/view/login-view.fxml"));
-
-            javafx.scene.Parent root = loader.load();
-
-            javafx.stage.Stage stage =
-                    (javafx.stage.Stage) tblAgenda.getScene().getWindow();
-
-            stage.setScene(new javafx.scene.Scene(root));
-            stage.setTitle("Renacer - Iniciar sesión");
-            stage.centerOnScreen();
-
-        } catch (Exception ex) {
-            Alertas.error(
-                    "No se pudo cerrar la sesión: "
-                    + ex.getMessage());
-        }
-    }
-
+}
     private void limpiarFormularioConsulta() {
 
         txtMotivo.clear();

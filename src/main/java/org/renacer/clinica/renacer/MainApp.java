@@ -2,31 +2,26 @@ package main.java.org.renacer.clinica.renacer;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import main.java.org.renacer.clinica.renacer.controller.PacienteController;
-
-import java.io.IOException;
+import main.java.org.renacer.clinica.renacer.util.sceneManager.SceneManager;
 
 /**
+ *
  * @author AGUILON
  */
 public class MainApp extends Application {
 
     @Override
-    public void start(Stage stage) throws IOException {
-        // Se apunta directamente a la vista del paciente
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/paciente-view.fxml"));
-        Parent root = loader.load();
-
-        // Se envía un ID de prueba para inicializar el módulo del paciente
-        PacienteController controller = loader.getController();
-        controller.setPacienteAutenticado(1, "Paciente de Prueba");
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Clínica Renacer - Módulo de Paciente");
-        stage.show();
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Clinica Renacer");
+        SceneManager sceneManager = new SceneManager(primaryStage);
+        // Por el momento la app inicia mostrando el login;
+        // al iniciar sesion correctamente se muestra el mensaje de Bienvenido.
+        sceneManager.showLoginView();
     }
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
