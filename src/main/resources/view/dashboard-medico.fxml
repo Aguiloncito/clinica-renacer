@@ -13,7 +13,11 @@
     <top>
         <VBox spacing="6">
             <padding><Insets top="10" right="12" bottom="6" left="12"/></padding>
-            <Label text="Dashboard médico - Agenda y citas" styleClass="header-title"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Dashboard médico - Agenda y citas" styleClass="header-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Cerrar sesión" onAction="#onCerrarSesion" styleClass="btn-danger"/>
+            </HBox>
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Médico:"/>
                 <ComboBox fx:id="cboMedico" prefWidth="280"/>
@@ -22,18 +26,17 @@
                 <Button text="Hoy" onAction="#onHoy"/>
                 <Button text="Refrescar" onAction="#onRefrescar"/>
                 <Label fx:id="lblResumen" text="" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Cerrar sesión" onAction="#onCerrarSesion" styleClass="btn-danger"/>
             </HBox>
         </VBox>
     </top>
 
     <center>
+        <ScrollPane fitToWidth="true" styleClass="app-scroll" BorderPane.alignment="CENTER">
         <VBox spacing="8">
             <padding><Insets top="0" right="6" bottom="10" left="12"/></padding>
 
             <Label text="Agenda del día seleccionado" styleClass="section-title"/>
-            <TableView fx:id="tblAgenda" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tblAgenda" VBox.vgrow="ALWAYS" minHeight="220">
                 <columns>
                     <TableColumn fx:id="colHora" text="Hora" prefWidth="80"/>
                     <TableColumn fx:id="colPaciente" text="Paciente" prefWidth="190"/>
@@ -64,10 +67,12 @@
                 <Button text="Agendar" onAction="#onAgendarCita" styleClass="btn-success"/>
             </HBox>
         </VBox>
+        </ScrollPane>
     </center>
 
     <right>
-        <VBox spacing="8" prefWidth="360" styleClass="card-panel">
+        <ScrollPane fitToWidth="true" styleClass="app-scroll" prefWidth="360" BorderPane.alignment="CENTER">
+        <VBox spacing="8" styleClass="card-panel">
             <padding><Insets top="0" right="12" bottom="10" left="6"/></padding>
 
             <Label text="Citas pendientes" styleClass="section-title"/>
@@ -92,5 +97,6 @@
             <Label text="Indicaciones:"/>
             <TextArea fx:id="txtIndicaciones" prefRowCount="2" promptText="Ej. Cada 8 horas por 5 dias"/>
         </VBox>
+        </ScrollPane>
     </right>
 </BorderPane>
