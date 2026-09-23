@@ -333,7 +333,8 @@ public class DashboardMedicoController implements Initializable {
                     + ex.getMessage());
         }
     }
-
+}
+ 
     private void refrescarTodo() {
         cargarConteoMes();
         cargarAgenda();
@@ -679,12 +680,19 @@ public class DashboardMedicoController implements Initializable {
 
             Alertas.advertencia(ex.getMessage());
 
-        } catch (SQLException ex) {
+        citaService.agendar(
+                String.valueOf(p.getIdPaciente()),
+                idMedicoFiltro(),
+                dpFecha.getValue(),
+                cboHoraLibre.getValue()
+        );
 
-            Alertas.error(
-                    "Error de base de datos: "
-                    + ex.getMessage());
-        }
+        Alertas.info("Cita agendada correctamente.");
+        refrescarTodo();
+    } catch (IllegalArgumentException ex) {
+        Alertas.advertencia(ex.getMessage());
+    } catch (Exception ex) {
+        Alertas.error("Error de base de datos o sistema: " + ex.getMessage());
     }
 
     @FXML

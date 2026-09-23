@@ -1,20 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package main.java.org.renacer.clinica.renacer.model;
 
-/**
- *
- * @author AGUILON
- */
 public class Medico {
-    
+
     private String idMedico;
     private String nombres;
     private String apellidos;
     private String especialidad;
     private String numeroColegiado;
+
+    public Medico() {
+    }
 
     public Medico(String idMedico, String nombres, String apellidos, String especialidad, String numeroColegiado) {
         this.idMedico = idMedico;
@@ -63,7 +58,12 @@ public class Medico {
     public void setNumeroColegiado(String numeroColegiado) {
         this.numeroColegiado = numeroColegiado;
     }
-    
-    
-    
+
+    @Override
+    public String toString() {
+        if ("0".equals(idMedico)) {
+            return nombres + " " + apellidos;
+        }
+        return "Dr. " + nombres + " " + apellidos + " - " + especialidad;
+    }
 }
