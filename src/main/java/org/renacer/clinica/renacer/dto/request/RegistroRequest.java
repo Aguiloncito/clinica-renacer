@@ -16,16 +16,16 @@ public class RegistroRequest {
     private String telefono;
     private String direccion;
     private String usuario;
-    private String password_hash;
+    private String passwordHash;
 
-    public RegistroRequest(String nombres, String apellidos, String fechaNacimiento, String telefono, String direccion, String usuario, String password_hash) {
+    public RegistroRequest(String nombres, String apellidos, String fechaNacimiento, String telefono, String direccion, String usuario, String passwordHash) {
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.fechaNacimiento = fechaNacimiento;
         this.telefono = telefono;
         this.direccion = direccion;
         this.usuario = usuario;
-        this.password_hash = password_hash;
+        this.passwordHash = passwordHash;
     }
 
     public String getNombres() {
@@ -76,13 +76,13 @@ public class RegistroRequest {
         this.usuario = usuario;
     }
 
-    public String getPassword_hash() {
-        return password_hash;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword_hash(String password_hash) {
-        this.password_hash = password_hash;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
-
+    
     
 }

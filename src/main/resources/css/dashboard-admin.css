@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Estilos extra del panel del administrador.
+   Se cargan JUNTO con dashboard-medico.css (que define las variables de color
+   -fx-primary-petroleo, -fx-bg-card, etc. y los estilos de botones y tablas).
+   ========================================================================== */
+
+/* ---- Pestañas ---------------------------------------------------------- */
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: #e5e7eb;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: #e5e7eb;
+    -fx-background-radius: 4px 4px 0 0;
+    -fx-padding: 5px 16px;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -fx-primary-petroleo;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-text-fill: -fx-primary-petroleo;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+
+.tab-pane > .tab-content-area {
+    -fx-background-color: -fx-bg-card;
+}
+
+/* ---- Tarjeta de cada pestaña ------------------------------------------- */
+.admin-panel {
+    -fx-background-color: -fx-bg-card;
+    -fx-padding: 12px;
+}
+
+/* ---- ScrollPane que envuelve el contenido de cada pestaña --------------- */
+.app-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.app-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ---- Datos del paciente en el expediente -------------------------------- */
+.expediente-nombre {
+    -fx-text-fill: -fx-primary-petroleo;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.expediente-datos {
+    -fx-text-fill: -fx-text-muted;
+    -fx-font-size: 12px;
+}
+
+/* ---- Áreas de texto de solo lectura (detalle de consulta/expediente) ---- */
+.detalle-area {
+    -fx-control-inner-background: #f9fbfd;
+    -fx-text-fill: -fx-text-main;
+}

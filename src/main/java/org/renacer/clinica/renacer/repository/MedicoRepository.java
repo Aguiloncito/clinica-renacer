@@ -83,6 +83,82 @@ public class MedicoRepository {
             }
         }
     }
+
+    /** true si ya existe un usuario con ese nombre de acceso. */
+    public boolean existeUsuario(String usuario) throws SQLException {
+        String sql = "SELECT 1 FROM usuarios WHERE usuario = ? LIMIT 1";
+        try (Connection cn = DataBaseConnection.getConnectionDataBase();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, usuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private int obtenerIdRolMedico(Connection cn) throws SQLException {
+        String sql = "SELECT id_rol FROM roles WHERE nombre_rol = 'medico'";
+        try (PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt("id_rol");
+        }
+        throw new SQLException("No existe el rol 'medico' en la tabla roles");
+    }
+
+    /**
+     * Inserta el médico y, en la misma transacción, crea su usuario de acceso
+     * (rol 'medico') con la contraseña ya encriptada.
+     */
+    public void insertarConUsuario(Medico m, String usuario, String passwordHasheada) throws SQLException {
+        String sqlMedico = "INSERT INTO medicos (nombres, apellidos, especialidad, numero_colegiado) VALUES (?,?,?,?)";
+        String sqlUsuario = "INSERT INTO usuarios (id_rol, id_medico, usuario, password_hash) VALUES (?,?,?,?)";
+
+        Connection cn = null;
+        try {
+            cn = DataBaseConnection.getConnectionDataBase();
+            cn.setAutoCommit(false);
+
+            int idMedicoGenerado;
+            try (PreparedStatement psMedico = cn.prepareStatement(sqlMedico, Statement.RETURN_GENERATED_KEYS)) {
+                psMedico.setString(1, m.getNombres());
+                psMedico.setString(2, m.getApellidos());
+                psMedico.setString(3, m.getEspecialidad());
+                psMedico.setString(4, m.getNumeroColegiado());
+                psMedico.executeUpdate();
+
+                try (ResultSet rs = psMedico.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        idMedicoGenerado = rs.getInt(1);
+                    } else {
+                        cn.rollback();
+                        throw new SQLException("No se pudo obtener el ID del médico recién creado.");
+                    }
+                }
+            }
+
+            int idRolMedico = obtenerIdRolMedico(cn);
+            try (PreparedStatement psUsuario = cn.prepareStatement(sqlUsuario)) {
+                psUsuario.setInt(1, idRolMedico);
+                psUsuario.setInt(2, idMedicoGenerado);
+                psUsuario.setString(3, usuario);
+                psUsuario.setString(4, passwordHasheada);
+                psUsuario.executeUpdate();
+            }
+
+            cn.commit();
+            m.setIdMedico(String.valueOf(idMedicoGenerado));
+
+        } catch (SQLException e) {
+            if (cn != null) {
+                cn.rollback();
+            }
+            throw e;
+        } finally {
+            if (cn != null) {
+                cn.setAutoCommit(true);
+            }
+        }
+    }
  
     public void actualizar(Medico m) throws SQLException {
         String sql = "UPDATE medicos SET nombres=?, apellidos=?, especialidad=?, numero_colegiado=? WHERE id_medico=?";
