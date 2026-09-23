@@ -57,6 +57,8 @@ public class SceneManager {
         Parent root = loader.load();
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(420);
+        primaryStage.setMinHeight(380);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         primaryStage.show();
@@ -84,6 +86,8 @@ public class SceneManager {
         Parent root = loader.load();
         Scene scene = new Scene(root, 1200, 720);
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(960);
+        primaryStage.setMinHeight(560);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         primaryStage.show();
@@ -94,6 +98,9 @@ public class SceneManager {
 
         loader.setControllerFactory(
                 clazz -> {
+                    if (clazz == DashboardMedicoController.class) {
+                        return new DashboardMedicoController(this);
+                    }
                     try {
                         return clazz.getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
@@ -104,6 +111,8 @@ public class SceneManager {
         Parent root = loader.load();
         Scene scene = new Scene(root, 1150, 700);
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(900);
+        primaryStage.setMinHeight(560);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         primaryStage.show();
@@ -125,6 +134,8 @@ public class SceneManager {
         Parent root = loader.load();
         Scene scene = new Scene(root, 700, 600);
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(480);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         primaryStage.show();
@@ -160,8 +171,10 @@ public class SceneManager {
     );
 
     Parent root = loader.load();
-    Scene scene = new Scene(root, 600, 400);
+    Scene scene = new Scene(root, 700, 560);
     primaryStage.setScene(scene);
+    primaryStage.setMinWidth(480);
+    primaryStage.setMinHeight(420);
     primaryStage.sizeToScene();
     primaryStage.centerOnScreen();
     primaryStage.show();

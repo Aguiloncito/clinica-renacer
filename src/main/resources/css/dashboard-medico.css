@@ -23,6 +23,17 @@
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
+/* ScrollPane que envuelve secciones para permitir scroll en ventanas pequeñas */
+.app-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.app-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
 /* ==========================================================================
    2. ETIQUETAS Y TÍTULOS
    ========================================================================== */
