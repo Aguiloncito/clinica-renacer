@@ -1,134 +1,169 @@
 package main.java.org.renacer.clinica.renacer.controller;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import main.java.org.renacer.clinica.renacer.dto.request.PacienteRequest;
-import main.java.org.renacer.clinica.renacer.dto.response.PacienteResponse;
-import main.java.org.renacer.clinica.renacer.service.PacienteService;
+import javafx.stage.Stage;
+
+import main.java.org.renacer.clinica.renacer.dto.response.CitaAgendaResponse;
+import main.java.org.renacer.clinica.renacer.model.Medico;
+import main.java.org.renacer.clinica.renacer.repository.PacienteRepository;
+import main.java.org.renacer.clinica.renacer.service.CitaService;
+import main.java.org.renacer.clinica.renacer.service.MedicoService;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Map;
 
 public class PacienteController {
 
-    @FXML private TextField txtIdPaciente;
-    @FXML private TextField txtNombres;
-    @FXML private TextField txtApellidos;
-    @FXML private DatePicker dpFechaNacimiento;
-    @FXML private TextField txtTelefono;
-    @FXML private TextField txtDireccion;
-    @FXML private TextField txtBuscar;
+    @FXML private Label lblNombrePaciente;
+    @FXML private Button btnCerrarSesion;
 
-    @FXML private TableView<PacienteResponse> tblPacientes;
-    @FXML private TableColumn<PacienteResponse, Integer> colIdPaciente;
-    @FXML private TableColumn<PacienteResponse, String> colNombres;
-    @FXML private TableColumn<PacienteResponse, String> colApellidos;
-    @FXML private TableColumn<PacienteResponse, LocalDate> colFechaNacimiento;
-    @FXML private TableColumn<PacienteResponse, String> colTelefono;
-    @FXML private TableColumn<PacienteResponse, String> colDireccion;
+    // --- Controles de Agendar Cita ---
+    @FXML private ComboBox<Medico> cmbMedicos;
+    @FXML private DatePicker dpFechaCita;
+    @FXML private TextField txtHoraCita;
 
-    private final PacienteService pacienteService = new PacienteService();
+    // --- Tabla Citas ---
+    @FXML private TableView<CitaAgendaResponse> tblMisCitas;
+    @FXML private TableColumn<CitaAgendaResponse, Integer> colCitaId;
+    @FXML private TableColumn<CitaAgendaResponse, String> colCitaMedico;
+    @FXML private TableColumn<CitaAgendaResponse, String> colCitaEspecialidad;
+    @FXML private TableColumn<CitaAgendaResponse, String> colCitaFecha;
+    @FXML private TableColumn<CitaAgendaResponse, String> colCitaEstado;
+
+    // --- Tabla Recetas ---
+    @FXML private TableView<Map<String, String>> tblMisRecetas;
+    @FXML private TableColumn<Map<String, String>, String> colRecetaFecha;
+    @FXML private TableColumn<Map<String, String>, String> colRecetaMedico;
+    @FXML private TableColumn<Map<String, String>, String> colRecetaDiagnostico;
+    @FXML private TableColumn<Map<String, String>, String> colRecetaMedicamentos;
+    @FXML private TableColumn<Map<String, String>, String> colRecetaIndicaciones;
+
+    // Servicios
+    private final MedicoService medicoService = new MedicoService();
+    private final CitaService citaService = new CitaService();
+    private final PacienteRepository pacienteRepo = new PacienteRepository();
+
+    private Integer idPacienteLogueado = 1;
 
     @FXML
     public void initialize() {
-        colIdPaciente.setCellValueFactory(new PropertyValueFactory<>("idPaciente"));
-        colNombres.setCellValueFactory(new PropertyValueFactory<>("nombres"));
-        colApellidos.setCellValueFactory(new PropertyValueFactory<>("apellidos"));
-        colFechaNacimiento.setCellValueFactory(new PropertyValueFactory<>("fechaNacimiento"));
-        colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
-        colDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+        // Mapeo directo de propiedades del DTO CitaAgendaResponse
+        colCitaId.setCellValueFactory(new PropertyValueFactory<>("idCita"));
+        colCitaMedico.setCellValueFactory(new PropertyValueFactory<>("medico"));
+        colCitaEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
+        colCitaFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colCitaEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
 
-        tblPacientes.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-            if (newSel != null) {
-                txtIdPaciente.setText(String.valueOf(newSel.getIdPaciente()));
-                txtNombres.setText(newSel.getNombres());
-                txtApellidos.setText(newSel.getApellidos());
-                dpFechaNacimiento.setValue(newSel.getFechaNacimiento());
-                txtTelefono.setText(newSel.getTelefono());
-                txtDireccion.setText(newSel.getDireccion());
-            }
-        });
+        // Mapeo columnas de la tabla de recetas
+        colRecetaFecha.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get("fechaHora")));
+        colRecetaMedico.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get("medico")));
+        colRecetaDiagnostico.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get("diagnostico")));
+        colRecetaMedicamentos.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get("medicamentos")));
+        colRecetaIndicaciones.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get("indicaciones")));
 
-        cargarTabla();
+        cargarMedicos();
+    }
+
+    public void setPacienteAutenticado(Integer idPaciente, String nombreCompleto) {
+        this.idPacienteLogueado = idPaciente;
+        if (lblNombrePaciente != null) {
+            lblNombrePaciente.setText("Bienvenido, " + nombreCompleto);
+        }
+        cargarMisCitas();
+        cargarMisRecetas();
     }
 
     @FXML
-    public void onGuardar() {
-        try {
-            boolean esEdicion = txtIdPaciente.getText() != null && !txtIdPaciente.getText().isBlank();
-            Integer id = esEdicion ? Integer.parseInt(txtIdPaciente.getText()) : null;
+    public void onAgendarCita() {
+        Medico medico = cmbMedicos.getValue();
+        LocalDate fecha = dpFechaCita.getValue();
+        String horaTexto = txtHoraCita.getText();
 
-            PacienteRequest req = new PacienteRequest(
-                    id,
-                    txtNombres.getText(),
-                    txtApellidos.getText(),
-                    dpFechaNacimiento.getValue(),
-                    txtTelefono.getText(),
-                    txtDireccion.getText()
+        try {
+            if (medico == null) {
+                throw new IllegalArgumentException("Por favor, seleccione un médico.");
+            }
+            if (fecha == null) {
+                throw new IllegalArgumentException("Por favor, seleccione una fecha para la cita.");
+            }
+            if (horaTexto == null || horaTexto.trim().isEmpty()) {
+                throw new IllegalArgumentException("Debe ingresar la hora manualmente (Ejemplo: 09:30 o 14:15).");
+            }
+
+            LocalTime hora;
+            try {
+                hora = LocalTime.parse(horaTexto.trim());
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("El formato de hora debe ser de 24 horas (HH:mm). Ejemplo: 09:30 o 14:15.");
+            }
+
+            citaService.agendar(
+                    String.valueOf(this.idPacienteLogueado),
+                    String.valueOf(medico.getIdMedico()),
+                    fecha,
+                    hora
             );
 
-            if (esEdicion) {
-                pacienteService.actualizarPaciente(req);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Paciente actualizado correctamente.");
-            } else {
-                pacienteService.registrarPaciente(req);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Paciente registrado correctamente.");
-            }
-
-            onLimpiar();
-            cargarTabla();
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Cita Agendada", "La cita con Dr. " + medico.getNombres() + " " + medico.getApellidos() + " ha sido registrada correctamente.");
+            limpiarFormulario();
+            cargarMisCitas();
+        } catch (IllegalArgumentException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Validación de Datos", e.getMessage());
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de Sistema", "No se pudo agendar la cita: " + e.getMessage());
         }
     }
 
     @FXML
-    public void onEliminar() {
-        PacienteResponse seleccionado = tblPacientes.getSelectionModel().getSelectedItem();
-        if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Seleccione un paciente de la tabla para eliminar.");
-            return;
-        }
+    public void onCerrarSesion() {
+        Stage stage = (Stage) btnCerrarSesion.getScene().getWindow();
+        stage.close();
+    }
 
+    private void cargarMedicos() {
         try {
-            pacienteService.eliminarPaciente(seleccionado.getIdPaciente());
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "Paciente eliminado correctamente.");
-            onLimpiar();
-            cargarTabla();
+            cmbMedicos.setItems(FXCollections.observableArrayList(medicoService.listar()));
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar la lista de médicos: " + e.getMessage());
         }
     }
 
-    @FXML
-    public void onBuscar() {
+    private void cargarMisCitas() {
+        if (idPacienteLogueado == null || idPacienteLogueado == 0) return;
         try {
-            tblPacientes.setItems(FXCollections.observableArrayList(
-                    pacienteService.buscarPacientes(txtBuscar.getText())
+            List<CitaAgendaResponse> lista = citaService.pendientes(String.valueOf(idPacienteLogueado));
+            ObservableList<CitaAgendaResponse> obsList = FXCollections.observableArrayList(lista);
+            tblMisCitas.setItems(obsList);
+            tblMisCitas.refresh();
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar las citas: " + e.getMessage());
+        }
+    }
+
+    private void cargarMisRecetas() {
+        if (idPacienteLogueado == null || idPacienteLogueado == 0) return;
+        try {
+            tblMisRecetas.setItems(FXCollections.observableArrayList(
+                    pacienteRepo.obtenerRecetasPorPaciente(idPacienteLogueado)
             ));
+            tblMisRecetas.refresh();
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al buscar: " + e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar las recetas: " + e.getMessage());
         }
     }
 
-    @FXML
-    public void onLimpiar() {
-        txtIdPaciente.clear();
-        txtNombres.clear();
-        txtApellidos.clear();
-        dpFechaNacimiento.setValue(null);
-        txtTelefono.clear();
-        txtDireccion.clear();
-        tblPacientes.getSelectionModel().clearSelection();
-    }
-
-    private void cargarTabla() {
-        try {
-            tblPacientes.setItems(FXCollections.observableArrayList(pacienteService.listarPacientes()));
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "Error al cargar la tabla: " + e.getMessage());
-        }
+    private void limpiarFormulario() {
+        cmbMedicos.getSelectionModel().clearSelection();
+        dpFechaCita.setValue(null);
+        txtHoraCita.clear();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
