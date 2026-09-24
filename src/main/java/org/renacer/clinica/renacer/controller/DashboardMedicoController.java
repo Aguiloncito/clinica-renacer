@@ -17,6 +17,7 @@ import main.java.org.renacer.clinica.renacer.repository.PacienteRepository;
 import main.java.org.renacer.clinica.renacer.service.CitaService;
 import main.java.org.renacer.clinica.renacer.util.Alertas;
 import main.java.org.renacer.clinica.renacer.util.EstadoCita;
+import main.java.org.renacer.clinica.renacer.util.sceneManager.SceneManager;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -84,6 +85,17 @@ public class DashboardMedicoController implements Initializable {
     /** null = todos los médicos. */
     private static final Medico TODOS =
             new Medico("0", "Todos", "los médicos", "—", "—");
+
+    private final SceneManager sceneManager;
+
+    /** Constructor por defecto (mantiene compatibilidad si se instancia sin SceneManager). */
+    public DashboardMedicoController() {
+        this.sceneManager = null;
+    }
+
+    public DashboardMedicoController(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -496,6 +508,23 @@ public class DashboardMedicoController implements Initializable {
     }
 
     @FXML
+    private void onCerrarSesion() {
+
+        if (sceneManager == null) {
+            Alertas.error("No se pudo volver al inicio de sesión.");
+            return;
+        }
+
+        try {
+            sceneManager.showLoginView();
+        } catch (Exception ex) {
+            Alertas.error(
+                    "No se pudo volver al inicio de sesión: "
+                    + ex.getMessage());
+        }
+    }
+
+    @FXML
     private void onRefrescar() {
         refrescarTodo();
     }
@@ -679,4 +708,3 @@ private void onAgendarCita() {
         txtIndicaciones.clear();
     }
 }
-
